@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "Hello World",
+    "description": "This extension is a simple hello world example",
+    "version": "1.0",
+    "action": {
+        "default_popup": "main.html",
+        "default_icon": "logo.png"
+    }
+}
