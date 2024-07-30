@@ -1,15 +1,24 @@
 {
     "manifest_version": 3,
-    "name": "Reading time",
+    "name": "YouTube Shorts Limiter",
     "version": "1.0",
-    "description": "Add the reading time to Chrome Extension documentation articles",
+    "description": "YouTube Shorts Limiter Extenstion. Stop user from watching more than 3 shorts in one go i.e. unless user relodes. Developed my Harshal Gahlot",
     "action": {
-        "default_popup": "main.html" 
+        "default_popup": "index.html" 
     },
     "icons": {
         "16": "images/logo-16.png",
         "32": "images/logo-32.png",
         "48": "images/logo-48.png",
         "128": "images/logo-128.png"
-    }
+    },
+    
+    "permissions": ["activeTab", "tabs" ,"storage"],
+
+    "content_scripts": [ {
+        "js": ["content_script.js"],
+        "matches": [
+            "*://www.youtube.com/shorts/*"
+        ]
+    } ]
 }
