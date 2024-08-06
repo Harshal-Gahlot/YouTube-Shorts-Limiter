@@ -1,7 +1,7 @@
 function core() {
     if (window.location.pathname.slice(1, 7) === "shorts") {
         storage = new Set()
-        SHORTS_LIM = 0
+        SHORTS_LIM = 3
         TIME = SHORTS_LIM * 50
         time = 0
         var timerId = setInterval(() => {
