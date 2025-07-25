@@ -1,29 +1,84 @@
 function core() {
-    if (window.location.pathname.slice(1, 7) === "shorts") {
-        storage = new Set()
-        SHORTS_LIM = 3
-        TIME = SHORTS_LIM * 50
-        time = 0
-        var timerId = setInterval(() => {
-            const pathName = window.location.pathname.slice(8);
-            storage.add(pathName);
-            console.log(storage.size, storage, time);
-            time += 1
-            if (time >= TIME || storage.size > SHORTS_LIM) {
-                clearInterval(timerId);
-                console.log('size out');
-                short = document.querySelector("html");
-                short.innerHTML = "<H1 style='margin: auto auto; background-color:#f00; padding:20px'>ENOUGH SHORTS FOR NOW, GO BACK TO WORK BITCH !</H1>";
-                short.style.position = "absolute";
-                short.style.height = '100vh';
-                short.style.width = '100vw';
-                short.style.display = 'grid';
-                short.style.placeItems = 'center';
-                short.style.backgroundColor = "black"
-                setTimeout(core, 1000);
-            }
-        }, 1000);
-    } else { setTimeout(core, 1000); }
+    // Check if the current page is a yt shorts video.
+    if (location.pathname.startsWith('/shorts/')) {
+        console.log('YouTube Shorts detected\n\n');
+        chrome.storage.local.get(
+            ['total_shorts_of_day', 'shorts_spree', 'total_shorts_watch_time', 'SHORTS_LIM', 'TIME_LIM', 'reset_in'],
+            ({ total_shorts_of_day = 0, shorts_spree = 0, total_shorts_watch_time = 0, SHORTS_LIM = 3, TIME_LIM = SHORTS_LIM * 60, reset_in = 0 }) => {
+
+                console.log("TOP FIRST PRINTING ALL VALUES::::::::", 'total_shorts_of_day', total_shorts_of_day, 'shorts_spree', shorts_spree, 'total_shorts_watch_time', total_shorts_watch_time, 'SHORTS_LIM', SHORTS_LIM, 'TIME_LIM', TIME_LIM, 'reset_in', reset_in, "Current time: ", Date.now());
+
+                // If the user has reached the shorts spree limit.
+                if (reset_in > Date.now() && shorts_spree === 0) {
+                    console.log('--------------------waiting for reset in:', (reset_in - Date.now()) / 1000, 'seconds or ', (reset_in - Date.now()) / 1000 / 60, 'minutes');
+                    displayMessage("NO MORE SCROLLING BABY, GO BACK TO WORK BITCH!");
+                    return;
+                }
+
+                const storage = new Set();
+                let stopwatch = 0;
+
+                const timerId = setInterval(() => {
+                    stopwatch++;
+                    total_shorts_watch_time++; // Increment watch time
+
+                    const id = location.pathname.slice(8);
+                    storage.add(id);
+
+                    if (stopwatch >= TIME_LIM || storage.size > SHORTS_LIM) {
+                        displayMessage("ENOUGH !");
+                        shorts_spree = 0;
+                        chrome.storage.local.set({
+                            shorts_spree
+                        });
+                        console.log('Time limit or spree limit reached, clearing interval');
+                        clearInterval(timerId);
+                        setTimeout(core, 1000);
+                        return;
+                    }
+
+                    if (storage.size > shorts_spree) {
+                        console.log('New short detected, increasing spree AND total shorts count to:', shorts_spree);
+                        shorts_spree++;
+                        total_shorts_of_day++;
+                    }
+
+                    if (shorts_spree === 1) {
+                        chrome.storage.local.set({
+                            reset_in: Date.now() + 1000 * 60 // 1 min
+                        });
+                        console.log('First short watched, setting reset timer:', Date.now() + 1000 * 60);
+                    }
+
+                    chrome.storage.local.set({
+                        total_shorts_of_day,
+                        shorts_spree,
+                        SHORTS_LIM,
+                        TIME_LIM,
+                        total_shorts_watch_time
+                    });
+
+                    // console.log("-----------last msg", 'total_shorts_of_day:', total_shorts_of_day, 'shorts_spree:', shorts_spree, 'SHORTS_LIM:', SHORTS_LIM, 'TIME_LIM:', TIME_LIM, 'total_shorts_watch_time:', total_shorts_watch_time);
+                    // console.log('reset_in:', reset_in, 'currentTime:', Date.now(), "able to watch:", reset_in > Date.now(), "\n\n\n\n");
+                }, 1000);
+            });
+    } else {
+        setTimeout(core, 1000);
+    }
 }
 
-core()
+function displayMessage(msg) {
+    document.documentElement.innerHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Shorts Limit Reached</title>
+</head>
+<body style="margin:0; padding:0; height:100vh; width:100vw; display:grid; place-items:center; background-color:black;">
+    <h1 style="background-color:#f00; padding:20px; margin:0;">${msg}</h1>
+</body>
+</html>`;
+}
+
+core();

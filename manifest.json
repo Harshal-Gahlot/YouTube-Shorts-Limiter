@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "YouTube Shorts Limiter",
     "version": "1.0",
-    "description": "YouTube Shorts Limiter Extenstion. Stop user from watching more than 3 shorts in one go i.e. unless user relodes. Developed my Harshal Gahlot",
+    "description": "YouTube Shorts Limiter Extenstion. Stop user from watching more than 3 shorts in one go i.e. unless user relodes. Developed my Harshal Gahlott",
     "action": {
         "default_popup": "index.html" 
     },
@@ -13,12 +13,14 @@
         "128": "images/logo-128.png"
     },
     
-    "permissions": ["activeTab"],
+    "permissions": ["activeTab", "storage"],
 
     "content_scripts": [ {
         "js": ["content_script.js"],
         "matches": [
             "*://www.youtube.com/*"
-        ]
+        ],
+        "all_frames": true,
+        "run_at": "document_idle"
     } ]
 }
