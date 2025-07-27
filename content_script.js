@@ -4,7 +4,7 @@ function core() {
         console.log('YouTube Shorts detected\n\n');
         chrome.storage.local.get(
             ['total_shorts_of_day', 'shorts_spree', 'total_shorts_watch_time', 'SHORTS_LIM', 'TIME_LIM', 'reset_in'],
-            ({ total_shorts_of_day = 0, shorts_spree = 0, total_shorts_watch_time = 0, SHORTS_LIM = 3, TIME_LIM = SHORTS_LIM * 60, reset_in = 0 }) => {
+            ({ total_shorts_of_day = 0, shorts_spree = 0, total_shorts_watch_time = 0, SHORTS_LIM = 3, TIME_LIM = 60, reset_in = 0 }) => {
 
                 console.log("TOP FIRST PRINTING ALL VALUES::::::::", 'total_shorts_of_day', total_shorts_of_day, 'shorts_spree', shorts_spree, 'total_shorts_watch_time', total_shorts_watch_time, 'SHORTS_LIM', SHORTS_LIM, 'TIME_LIM', TIME_LIM, 'reset_in', reset_in, "Current time: ", Date.now());
 
@@ -17,6 +17,7 @@ function core() {
 
                 const storage = new Set();
                 let stopwatch = 0;
+                let reset_in_flag = false;
 
                 const timerId = setInterval(() => {
                     stopwatch++;
@@ -25,7 +26,7 @@ function core() {
                     const id = location.pathname.slice(8);
                     storage.add(id);
 
-                    if (stopwatch >= TIME_LIM || storage.size > SHORTS_LIM) {
+                    if (stopwatch >= TIME_LIM * SHORTS_LIM || storage.size > SHORTS_LIM) {
                         displayMessage("ENOUGH !");
                         shorts_spree = 0;
                         chrome.storage.local.set({
@@ -43,18 +44,19 @@ function core() {
                         total_shorts_of_day++;
                     }
 
-                    if (shorts_spree === 1) {
+                    if (shorts_spree === 1 && !reset_in_flag) {
+                        reset_in_flag = true;
                         chrome.storage.local.set({
-                            reset_in: Date.now() + 1000 * 60 // 1 min
+                            reset_in: Date.now() + 1000 * 60 * 60, // 60 min
+                            SHORTS_LIM,
+                            TIME_LIM
                         });
-                        console.log('First short watched, setting reset timer:', Date.now() + 1000 * 60);
+                        console.log('First short watched, setting reset timer:', Date.now() + 1000 * 60 * 60);
                     }
 
                     chrome.storage.local.set({
                         total_shorts_of_day,
                         shorts_spree,
-                        SHORTS_LIM,
-                        TIME_LIM,
                         total_shorts_watch_time
                     });
 

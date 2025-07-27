@@ -1,8 +1,50 @@
+<!DOCTYPE html>
 <html>
-    <body>
-        <h3 id="container">
-            Youtube shorts limiter extenstion. Developed by Harshal Gahlot
-        </h3>
-        <script src="logic.js"></script>
-    </body>
+
+<head>
+    <title>Popup</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-black text-white p-4" style="width:max-content;">
+    <h1 class="text-2xl font-bold mb-4">Shorts Limiter</h1>
+
+    <div class="text-xl">Number of shorts watched:
+        <span id="shorts_count">-</span>
+    </div>
+    <div class="text-xl">Time spent waching shorts today:
+        <span id="total_shorts_watch_time">-</span>
+    </div>
+    <div>
+        <label for="shorts_lim_choose">Choose shorts limit:</label>
+        <select id="shorts_lim_choose" class="bg-black text-white border border-gray-600 rounded p-1">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+    </div>
+    <div>
+        <label for="time_lim_choose">Choose per short max limit:</label>
+        <select id="time_lim_choose" class="bg-black text-white border border-gray-600 rounded p-1">
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+            <option value="120">120</option>
+        </select>
+    </div>
+
+</body>
+<script src="index.js"></script>
+</body>
+
 </html>
