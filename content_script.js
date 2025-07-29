@@ -3,8 +3,8 @@ function core() {
     if (location.pathname.startsWith('/shorts/')) {
         console.log('YouTube Shorts detected\n\n');
         chrome.storage.local.get(
-            ['total_shorts_of_day', 'shorts_spree', 'total_shorts_watch_time', 'SHORTS_LIM', 'TIME_LIM', 'reset_in', 'daily_reset_in'],
-            ({ total_shorts_of_day = 0, shorts_spree = 0, total_shorts_watch_time = 0, SHORTS_LIM = 3, TIME_LIM = 60, reset_in = 0, daily_reset_in = 0 }) => {
+            ['total_shorts_of_day', 'yesterday_total_shorts_of_day', 'shorts_spree', 'total_shorts_watch_time', 'yesterday_total_shorts_watch_time', 'SHORTS_LIM', 'TIME_LIM', 'reset_in', 'daily_reset_in'],
+            ({ total_shorts_of_day = 0, yesterday_total_shorts_of_day = '-', yesterday_total_shorts_watch_time = '-', shorts_spree = 0, total_shorts_watch_time = 0, SHORTS_LIM = 3, TIME_LIM = 60, reset_in = 0, daily_reset_in = 0 }) => {
 
                 console.log("TOP FIRST PRINTING ALL VALUES::::::::", 'total_shorts_of_day', total_shorts_of_day, 'shorts_spree', shorts_spree, 'total_shorts_watch_time', total_shorts_watch_time, 'SHORTS_LIM', SHORTS_LIM, 'TIME_LIM', TIME_LIM, 'reset_in', reset_in, "Current time: ", Date.now());
 
@@ -60,17 +60,24 @@ function core() {
                             const seconds_passed = date.getSeconds();
 
                             const seconds_left = (60 - seconds_passed) * 1000;
-                            const min_left = (59 - min_passed) * 60000; 
+                            const min_left = (59 - min_passed) * 60000;
                             let hours_left;
                             if (hours_passed < 4) {
-                                hours_left = (3 - hours_passed) * 3600000; 
+                                hours_left = (3 - hours_passed) * 3600000;
                             } else {
                                 hours_left = (23 - hours_passed + 4) * 3600000;
                             }
                             const daily_reset = Date.now() + seconds_left + min_left + hours_left;
 
                             chrome.storage.local.set({
-                                daily_reset_in: daily_reset
+                                daily_reset_in: daily_reset,
+                                yesterday_total_shorts_of_day: total_shorts_of_day,
+                                yesterday_total_shorts_watch_time: total_shorts_watch_time,
+                            });
+
+                            chrome.storage.local.set({
+                                total_shorts_of_day: 0,
+                                total_shorts_watch_time: 0
                             });
 
                             console.log("DAILY_RESET_IN:", new Date(daily_reset).toString());
