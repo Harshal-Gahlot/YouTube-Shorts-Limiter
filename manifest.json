@@ -16,9 +16,14 @@
     "permissions": ["activeTab", "storage"],
 
     "content_scripts": [ {
-        "js": ["content_script.js"],
+        "js": ["youtube_content_script.js"],
         "matches": [
             "*://www.youtube.com/*"
+        ]
+    }, {
+        "js": ["linkedin_content_script.js"],
+        "matches": [
+            "*://www.linkedin.com/*"
         ],
         "all_frames": true,
         "run_at": "document_idle"
